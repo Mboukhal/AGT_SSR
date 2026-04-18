@@ -10,9 +10,6 @@ export default defineConfig({
 	envPrefix: ['APP_'],
 	server: {
 		port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : undefined,
-		proxy: {
-			'/api': process.env.APP_DOMAIN!
-		},
 	},
 	test: {
 		expect: { requireAssertions: true },

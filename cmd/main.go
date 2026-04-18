@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"log"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -80,7 +81,12 @@ func developmentSettings(r chi.Router) {
 
 		path := req.URL.Path
 
-		ui := "http://localhost:" + os.Getenv("APP_PORT")
+		ui_port := os.Getenv("APP_PORT")
+		if ui_port == "" {
+			panic("APP_PORT environment variable is not set")
+		}
+
+		ui := "http://localhost:" + ui_port
 		proxyReq, _ := http.NewRequest(req.Method, ui+path, req.Body)
 		proxyReq.Header = req.Header
 
@@ -91,9 +97,7 @@ func developmentSettings(r chi.Router) {
 		}
 		defer resp.Body.Close()
 
-		for k, v := range resp.Header {
-			w.Header()[k] = v
-		}
+		maps.Copy(w.Header(), resp.Header)
 		w.WriteHeader(resp.StatusCode)
 		io.Copy(w, resp.Body)
 	})

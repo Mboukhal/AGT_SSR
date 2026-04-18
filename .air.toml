@@ -1,11 +1,11 @@
 root = "."
-testdata_dir = "testdata"
-tmp_dir = "tmp"
+testdata_dir = "/tmp/testdata"
+tmp_dir = "/tmp/air/"
 
 [build]
-entrypoint = "tmp/bin/main"
+entrypoint = "/tmp/air/bin/main"
 args_bin = []
-cmd = "go build -o tmp/bin/main ./cmd/main.go"
+cmd = "go build -o /tmp/air/bin/main ./cmd/main.go"
 delay = 100
 exclude_dir = [
   "assets",
