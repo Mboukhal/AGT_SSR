@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"log"
 	"maps"
@@ -11,10 +12,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Mboukhal/SvGoPg/cmd/settings"
+	router "github.com/Mboukhal/SvGoPg/core"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
+
+func init() {
+	_ = godotenv.Load()
+}
 
 func main() {
 
@@ -27,8 +34,12 @@ func main() {
 	}
 	isProduction := app_env == "production"
 
-	_ = godotenv.Load()
 	r := chi.NewRouter()
+	q, conn, err := settings.Setup(context.Background())
+	if err != nil {
+		log.Panic(err)
+	}
+	defer conn.Close(context.Background())
 
 	// A good base middleware stack
 	if isProduction {
@@ -39,8 +50,9 @@ func main() {
 	} else {
 		// r.Use(middleware.Logger)
 	}
+
 	// Inject queries into context
-	// r.Use(settings.WithQueries(queries))
+	r.Use(settings.WithQueries(q))
 
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further
@@ -53,13 +65,15 @@ func main() {
 		developmentSettings(r)
 	}
 
+	router.RegisterRoutes(r)
+
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
 		port = "3000"
 	}
 
 	log.Printf("Starting server on port %s in %s mode", port, app_env)
-	err := http.ListenAndServe(":"+port, r)
+	err = http.ListenAndServe(":"+port, r)
 	if err != nil {
 		log.Fatal(err)
 	}

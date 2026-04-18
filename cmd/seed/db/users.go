@@ -3,6 +3,7 @@ package db_seed
 import (
 	"context"
 
+	"github.com/Mboukhal/SvGoPg/core/auth/ep"
 	sqlc "github.com/Mboukhal/SvGoPg/internal/db"
 )
 
@@ -20,10 +21,14 @@ var users = []struct {
 
 func LoadUsers(q *sqlc.Queries, ctx context.Context) error {
 	for _, user := range users {
-		err := q.CreateUser(ctx, sqlc.CreateUserParams{
-			Username:     user.name,
-			Email:        user.email,
-			PasswordHash: user.password,
+		passwordHash, err := ep.HashPassword(user.password)
+		if err != nil {
+			return err
+		}
+		err = q.CreateUser(ctx, sqlc.CreateUserParams{
+			Username: user.name,
+			Email:    user.email,
+			Password: passwordHash,
 		})
 		if err != nil {
 			return err

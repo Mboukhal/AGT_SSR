@@ -3,7 +3,7 @@ include .env
 export
 
 
-all: gen push dev
+all: start gen push seed dev
 
 
 # -------- Development --------
@@ -51,7 +51,7 @@ db:
 push:
 	## Push the database to the latest version
 	goose up || true
-	@#$(MAKE) seed
+	
 
 down:
 	## Migrate the database down by one version
@@ -61,7 +61,7 @@ migrate:
 	## Migrate the database up to the latest version
 	@goose $(ARGS)
 
-seed: push gen
+seed: 
 	go run ./cmd/seed/start.go
 
 gen: 
