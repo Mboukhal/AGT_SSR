@@ -39,7 +39,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
 	// A good base middleware stack
 	if isProduction {

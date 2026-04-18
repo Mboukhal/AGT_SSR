@@ -49,8 +49,14 @@ db:
 	@goose create $(ARGS) sql
 
 push:
-	## Push the database to the latest version
-	goose up || true
+
+	# wait for the database to be ready
+	@until goose up 2> /dev/null; do \
+		echo "Waiting for database to be ready..."; \
+		sleep 2; \
+	done
+# 	## Push the database to the latest version
+# 	goose up || true
 	
 
 down:

@@ -16,6 +16,15 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+var PASSWORD_HASH_KEY = ""
+
+func init() {
+	PASSWORD_HASH_KEY = os.Getenv("PASSWORD_HASH_KEY")
+	if PASSWORD_HASH_KEY == "" {
+		log.Fatalln("PASSWORD_HASH_KEY not set in environment variables")
+	}
+}
+
 // const magicLinkExpiryMinutes = 3
 
 // func sendTokenEmail(to string, token string) error {
@@ -59,13 +68,8 @@ func checkEmailAuthorization(ctx context.Context, email string) error {
 
 func HashPassword(password string) (string, error) {
 
-	key := os.Getenv("PASSWORD_HASH_KEY")
-	if key == "" {
-		log.Fatalln("PASSWORD_HASH_KEY not set in environment variables")
-		return "", errors.New("password hash key not set in environment variables")
-	}
 	// 1. Convert the key and message to byte slices.
-	keyBytes := []byte(key)
+	keyBytes := []byte(PASSWORD_HASH_KEY)
 	messageBytes := []byte(password)
 
 	// 2. Create a new HMAC hash using the sha256 algorithm and the key.
@@ -87,7 +91,7 @@ func VerifyPassword(password string, hash string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	println("Verifying password. Hashed input:", hashedPassword, "Stored hash:", hash, "Password:", password, "Match:", hashedPassword == hash)
+	// println("Verifying password. Hashed input:", hashedPassword, "Stored hash:", hash, "Password:", password, "Match:", hashedPassword == hash)
 	return hashedPassword == hash, nil
 }
 

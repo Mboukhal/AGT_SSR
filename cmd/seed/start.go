@@ -32,7 +32,7 @@ func dbSeed() {
 		fmt.Println("Failed to set up database connection:", err)
 		return
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	if err = db_seed.LoadUsers(q, ctx); err != nil {
 		println("Err:", err.Error())
 	}
