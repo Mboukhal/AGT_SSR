@@ -4,7 +4,7 @@ name: ${APP_NAME}
 services:
   db:
     image: postgres:18.3-alpine3.22
-    container_name: ${APP_NAME}_db
+    container_name: db_${APP_NAME}
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -17,7 +17,7 @@ services:
 
   storage:
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
-    container_name: ${APP_NAME}_storage
+    container_name: storage_${APP_NAME}
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
@@ -28,6 +28,51 @@ services:
     volumes:
       - minio_data:/data
     restart: always
+
+  # pgadmin:
+  #   image: dpage/pgadmin4:9.14.0
+  #   container_name: pgadmin_${APP_NAME}
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+  #     PGADMIN_SERVER_JSON_FILE: /tmp/servers.json
+  #     PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
+  #     PGADMIN_SERVER_NAME: ${PGADMIN_SERVER_NAME:-Auto}
+  #     PGADMIN_SERVER_GROUP: ${PGADMIN_SERVER_GROUP:-Servers}
+  #     PGADMIN_DB_HOST: ${PGADMIN_DB_HOST:-db}
+  #     PGADMIN_DB_PORT: ${PGADMIN_DB_PORT:-5432}
+  #     PGADMIN_DB_MAINTENANCE_DB: ${PGADMIN_DB_MAINTENANCE_DB:-postgres}
+  #     PGADMIN_DB_USERNAME: ${PGADMIN_DB_USERNAME:-${POSTGRES_USER}}
+  #     PGADMIN_DB_SSLMODE: ${PGADMIN_DB_SSLMODE:-prefer}
+  #     PGADMIN_PORT: ${PGADMIN_PORT}
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #   depends_on:
+  #     - db
+  #   entrypoint:
+  #     - /bin/sh
+  #     - -c
+  #     - |
+  #       cat > /tmp/servers.json <<EOF
+  #       {
+  #         "Servers": {
+  #           "1": {
+  #             "Name": "${PGADMIN_SERVER_NAME}",
+  #             "Group": "${PGADMIN_SERVER_GROUP}",
+  #             "Host": "${PGADMIN_DB_HOST}",
+  #             "Port": ${PGADMIN_DB_PORT},
+  #             "MaintenanceDB": "${PGADMIN_DB_MAINTENANCE_DB}",
+  #             "Username": "${PGADMIN_DB_USERNAME}",
+  #             "SSLMode": "${PGADMIN_DB_SSLMODE}"
+  #           }
+  #         }
+  #       }
+  #       EOF
+  #       exec /entrypoint.sh
+  #   ports:
+  #     - 127.0.0.1:${PGADMIN_PORT}:80
+  #   restart: always
 
 volumes:
   db_data:

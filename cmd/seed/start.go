@@ -1,11 +1,11 @@
 package main
 
 import (
-	"SvGoPg/scrips/seed/db"
 	"context"
 	"fmt"
 	"log"
 
+	"github.com/Mboukhal/SvGoPg/cmd/seed/db"
 	"github.com/joho/godotenv"
 )
 

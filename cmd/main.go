@@ -27,16 +27,6 @@ func main() {
 	isProduction := app_env == "production"
 
 	_ = godotenv.Load()
-
-	uploadDir := os.Getenv("UPLOAD_DIR")
-	if uploadDir == "" {
-		uploadDir = "./uploads"
-	}
-	// if uploadDir not exist, create it
-	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
-		os.MkdirAll(uploadDir, os.ModePerm)
-	}
-
 	r := chi.NewRouter()
 
 	// A good base middleware stack
@@ -62,12 +52,12 @@ func main() {
 		developmentSettings(r)
 	}
 
-	port := os.Getenv("PORT")
+	port := os.Getenv("SERVER_PORT")
 	if port == "" {
 		port = "3000"
 	}
 
-	// log.Printf("Starting server on port %s in %s mode", port, app_env)
+	log.Printf("Starting server on port %s in %s mode", port, app_env)
 	err := http.ListenAndServe(":"+port, r)
 	if err != nil {
 		log.Fatal(err)
