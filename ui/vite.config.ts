@@ -1,20 +1,19 @@
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
-import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
-
+	plugins: [tailwindcss(), sveltekit()],
 	envDir: '../',
 	clearScreen: false,
 	envPrefix: ['APP_'],
 	server: {
-		port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 8000,
+		port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : undefined,
 		proxy: {
 			'/api': process.env.APP_DOMAIN!
 		},
 	},
-	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

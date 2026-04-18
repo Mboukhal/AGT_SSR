@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Mboukhal/SvGoPg/cmd/seed/db"
+	db_seed "github.com/Mboukhal/SvGoPg/cmd/seed/db"
+	sqlc "github.com/Mboukhal/SvGoPg/internal/db"
 	"github.com/joho/godotenv"
 )
 
@@ -18,13 +19,17 @@ func dbSeed() {
 
 	ctx := context.Background()
 
-	conn, err := db.Setup(ctx)
+	conn, err := db_seed.Setup(ctx)
 	if err != nil {
 		log.Fatal("Failed to set up database connection:", err)
 	}
 	defer conn.Close(context.Background())
 
-	db.Test(conn)
+	// Create queries instance
+	q := sqlc.New(conn)
+
+	db_seed.LoadUsers(q, ctx)
+	db_seed.Test(conn)
 
 	fmt.Println("Seeding completed successfully")
 }

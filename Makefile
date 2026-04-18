@@ -1,12 +1,9 @@
-
-
 # Include .env file
 include .env
 export
 
 
-all: dev
-
+all: gen push dev
 
 
 # -------- Development --------
@@ -48,24 +45,27 @@ install:
 
 # -------- Database --------
 db:
-	## Create a new database
-	@goose -dir ${GOOSE_MIGDIR} create $(ARGS) sql
+	@## Create a new database
+	@goose create $(ARGS) sql
 
 push:
 	## Push the database to the latest version
-	@mkdir -p ${DATABASE_DIR}; 
-	@goose -dir ${GOOSE_MIGDIR} sqlite3 $${DATABASE_URL} up || true
-	@go run ./seed/db.go
+	goose up || true
+	@#$(MAKE) seed
 
 down:
 	## Migrate the database down by one version
-	@goose -dir ${GOOSE_MIGDIR} sqlite3 $${DATABASE_URL} down 1
+	@goose down 1
 
 migrate:
 	## Migrate the database up to the latest version
-	@goose -dir ${GOOSE_MIGDIR} sqlite3 $${DATABASE_URL} $(ARGS)
+	@goose $(ARGS)
 
 seed: push gen
-	go run ./cmd/seed/db.go
+	go run ./cmd/seed/start.go
 
-.PHONY: all server ui dev start stop clean re install
+gen: 
+	## Generate Go code from SQL queries
+	sqlc generate || true
+
+.PHONY: all server ui dev start stop clean re install db push down migrate seed

@@ -1,4 +1,4 @@
-package db
+package db_seed
 
 import (
 	"context"
