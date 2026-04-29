@@ -95,12 +95,7 @@ func developmentSettings(r chi.Router) {
 
 		path := req.URL.Path
 
-		ui_port := os.Getenv("APP_PORT")
-		if ui_port == "" {
-			panic("APP_PORT environment variable is not set")
-		}
-
-		ui := "http://localhost:" + ui_port
+		ui := "http://localhost:1337"
 		proxyReq, _ := http.NewRequest(req.Method, ui+path, req.Body)
 		proxyReq.Header = req.Header
 

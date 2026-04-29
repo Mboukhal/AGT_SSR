@@ -28,7 +28,7 @@ FROM scratch
 WORKDIR /app
 ENV APP_ENV=production
 
-COPY --from=ui /app/build ./ui
+COPY --from=ui /app/dist ./ui
 
 COPY --from=builder /app/dist/server .
 

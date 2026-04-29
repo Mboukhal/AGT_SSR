@@ -3,7 +3,7 @@ include .env
 export
 
 
-all: start gen push seed dev
+all: start gen push dev
 
 
 # -------- Development --------
@@ -67,11 +67,9 @@ migrate:
 	## Migrate the database up to the latest version
 	@goose $(ARGS)
 
-seed: 
-	go run ./cmd/seed/start.go
 
 gen: 
 	## Generate Go code from SQL queries
 	sqlc generate || true
 
-.PHONY: all server ui dev start stop clean re install db push down migrate seed
+.PHONY: all server ui dev start stop clean re install db push down migrate
