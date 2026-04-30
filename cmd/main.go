@@ -12,8 +12,8 @@ import (
 	"time"
 
 	router "github.com/Mboukhal/SvGoPg/core"
+	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -47,6 +47,7 @@ func main() {
 		r.Use(middleware.Logger)
 	}
 	r.Use(middleware.Logger)
+	// r.Use(middlewaretext)
 
 	// Inject queries into context
 	// r.Use(settings.WithQueries(q))
@@ -75,6 +76,21 @@ func main() {
 		log.Fatal(erro)
 	}
 }
+
+// func middlewaretext(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+// 		if strings.HasPrefix(r.URL.Path, "/about") {
+// 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+// 			w.Write([]byte("This is a simple Go server for serving a SvelteKit app."))
+// 			return
+// 		}
+
+// 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
 
 func developmentSettings(r chi.Router) {
 
