@@ -11,15 +11,13 @@
     "preview": "astro preview",
     "astro": "astro"
   },
-  "dependencies": {
+  "devDependencies": {
     "@astrojs/svelte": "^8.1.0",
     "@tailwindcss/vite": "^4.2.4",
-    "astro": "^6.1.10",
+    "astro": "^6.2.1",
     "svelte": "^5.55.5",
     "tailwindcss": "^4.2.4",
-    "typescript": "^6.0.3"
-  },
-  "devDependencies": {
+    "typescript": "^6.0.3",
     "@fontsource-variable/inter": "^5.2.8",
     "@lucide/svelte": "^1.14.0",
     "clsx": "^2.1.1",

@@ -1,20 +1,17 @@
 ---
-import ClientRouter from "astro/components/ClientRouter.astro";
-
 const { title = import.meta.env.APP_NAME } = Astro.props;
 ---
 
 <html lang="fr">
     <head>
         <meta charset="utf-8" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width" />
-        <meta name="generator" content={Astro.generator} />
+        <meta name="author" content="MBoukhal" />
         <title>
             {title}
         </title>
-        <ClientRouter />
     </head>
     <body>
         <slot />

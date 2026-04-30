@@ -14,11 +14,14 @@ import (
 	"github.com/Mboukhal/SvGoPg/cmd/settings"
 	sqlc "github.com/Mboukhal/SvGoPg/internal/db"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 var PASSWORD_HASH_KEY = ""
 
 func init() {
+	_ = godotenv.Load()
+
 	PASSWORD_HASH_KEY = os.Getenv("PASSWORD_HASH_KEY")
 	if PASSWORD_HASH_KEY == "" {
 		log.Fatalln("PASSWORD_HASH_KEY not set in environment variables")

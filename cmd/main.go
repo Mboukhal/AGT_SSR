@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"io"
 	"log"
 	"maps"
@@ -12,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Mboukhal/SvGoPg/cmd/settings"
 	router "github.com/Mboukhal/SvGoPg/core"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -35,11 +33,11 @@ func main() {
 	isProduction := app_env == "production"
 
 	r := chi.NewRouter()
-	q, conn, err := settings.Setup(context.Background())
-	if err != nil {
-		log.Panic(err)
-	}
-	defer conn.Close()
+	// q, conn, err := settings.Setup(context.Background())
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
+	// defer conn.Close()
 
 	// A good base middleware stack
 	if isProduction {
@@ -47,12 +45,11 @@ func main() {
 		r.Use(middleware.RealIP)
 		r.Use(middleware.Recoverer)
 		r.Use(middleware.Logger)
-	} else {
-		// r.Use(middleware.Logger)
 	}
+	r.Use(middleware.Logger)
 
 	// Inject queries into context
-	r.Use(settings.WithQueries(q))
+	// r.Use(settings.WithQueries(q))
 
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further
@@ -73,15 +70,11 @@ func main() {
 	}
 
 	log.Printf("Starting server on port %s in %s mode", port, app_env)
-	err = http.ListenAndServe(":"+port, r)
-	if err != nil {
-		log.Fatal(err)
+	erro := http.ListenAndServe(":"+port, r)
+	if erro != nil {
+		log.Fatal(erro)
 	}
 }
-
-const (
-	STATIC_DIR = "ui"
-)
 
 func developmentSettings(r chi.Router) {
 
@@ -113,15 +106,19 @@ func developmentSettings(r chi.Router) {
 
 }
 
+const (
+	STATIC_DIR = "static"
+)
+
 func productionSettings(r chi.Router) {
 	// Apply gzip middleware to all responses
 	r.Use(middleware.Compress(5))
 
 	// Serve static files from /_/{path...}
-	r.Get("/_app/*", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	r.Get("/_astro/*", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		path := req.URL.Path
 
-		if strings.HasPrefix(path, "/_app/immutable") {
+		if strings.HasPrefix(path, "/_astro") {
 			// Cache immutable assets for 1 hour
 			w.Header().Set("Cache-Control", "public, max-age=3600, immutable")
 		}
@@ -133,13 +130,13 @@ func productionSettings(r chi.Router) {
 	r.NotFound(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Try to serve the requested file if it exists
 
-		path := req.URL.Path
+		// path := req.URL.Path
 		// Prevent serving files from .well-known directory
 		// This is a security measure to avoid exposing sensitive files
-		if strings.HasPrefix(path, "/.well-known/") {
-			http.NotFound(w, req)
-			return
-		}
+		// if strings.HasPrefix(path, "/.well-known/") {
+		// 	http.NotFound(w, req)
+		// 	return
+		// }
 
 		cleanPath := filepath.Clean(req.URL.Path)
 		// log.Println("cleanPath:", cleanPath)

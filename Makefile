@@ -72,4 +72,15 @@ gen:
 	## Generate Go code from SQL queries
 	sqlc generate || true
 
-.PHONY: all server ui dev start stop clean re install db push down migrate
+build:
+	## Build the Go server
+	rm -rf ./build
+	mkdir -p ./build
+	@(cd ./ui && bun run build && mv ./dist ../build/static) 
+
+	go build -o ./build/server ./cmd/main.go
+	cp .env ./build/.env
+# 	sed -i 's/APP_ENV=development/APP_ENV=production/g' ./build/.env 
+	@(cd ./build && ./server)
+
+.PHONY: all server ui dev start stop clean re install db push down migrate build gen
