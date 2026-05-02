@@ -34,6 +34,33 @@ Go → parses HTML with html/template → injects data (SSR)
 </If>
 ```
 
+## ▶️ Run Demo
+
+```bash
+# 1. clone
+git clone https://github.com/Mboukhal/AGT_SSR
+cd AGT_SSR
+
+# 2. install using bun
+make install
+mv .env.exemple .env
+
+# 3. run Project
+make 
+```
+
+Open:
+
+```
+http://localhost:3000
+```
+
+
+## 👤 Credits
+
+Demo by @Mboukhal
+
+
 ### What happens
 
 * `{"{{.Name}}"}` → Astro outputs literal `{{ .Name }}` into HTML
