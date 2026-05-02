@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/Mboukhal/SvGoPg/core/auth"
+	"github.com/Mboukhal/AGT_SSR/core/auth"
 	"github.com/go-chi/chi"
 )
 

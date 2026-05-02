@@ -12,8 +12,8 @@ import (
 	"text/template"
 	"time"
 
-	router "github.com/Mboukhal/SvGoPg/core"
-	"github.com/Mboukhal/SvGoPg/core/auth"
+	router "github.com/Mboukhal/AGT_SSR/core"
+	"github.com/Mboukhal/AGT_SSR/core/auth"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/sessions"

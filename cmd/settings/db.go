@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Mboukhal/SvGoPg/internal/db"
+	"github.com/Mboukhal/AGT_SSR/internal/db"
 )
 
 type contextKey string

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	sqlc "github.com/Mboukhal/SvGoPg/internal/db"
+	sqlc "github.com/Mboukhal/AGT_SSR/internal/db"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

@@ -3,7 +3,6 @@ module github.com/Mboukhal/AGT_SSR
 go 1.26.2
 
 require (
-	github.com/Mboukhal/AGT_SSR v0.0.0-20260502102845-5a69daddb2b7
 	github.com/go-chi/chi v1.5.5
 	github.com/gorilla/csrf v1.7.3
 	github.com/gorilla/sessions v1.4.0
