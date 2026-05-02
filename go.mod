@@ -1,4 +1,4 @@
-module github.com/Mboukhal/SvGoPg
+module github.com/Mboukhal/AGT_SSR
 
 go 1.26.2
 
