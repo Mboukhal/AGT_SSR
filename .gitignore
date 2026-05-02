@@ -1,3 +1,4 @@
 services/storage/*
 services/db/*
 **/.env
+build/

@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
@@ -90,11 +91,20 @@ func (m *MicrosoftUser) EmailOrUPN() string {
 	return m.UserEmail
 }
 
+func requestIsSecure(r *http.Request) bool {
+	if r.TLS != nil {
+		return true
+	}
+
+	return strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
+}
+
 func (s *Service) CreateSession(r *http.Request, user *MicrosoftUser) (*sessions.Session, error) {
 	session, err := s.Store.New(r, SessionName)
 	if err != nil {
 		return nil, err
 	}
+	session.Options.Secure = requestIsSecure(r)
 	session.Values[UserIDKey] = user.ID
 	session.Values[EmailKey] = user.EmailOrUPN()
 	session.Values[UsernameKey] = user.DisplayName

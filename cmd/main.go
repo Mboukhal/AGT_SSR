@@ -9,12 +9,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 	"time"
 
-	"github.com/Mboukhal/SvGoPg/core"
+	router "github.com/Mboukhal/SvGoPg/core"
 	"github.com/Mboukhal/SvGoPg/core/auth"
 	"github.com/go-chi/chi"
-	chimiddleware "github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 )
@@ -46,7 +47,7 @@ func main() {
 		Path:     "/",
 		MaxAge:   86400 * 7,
 		HttpOnly: true,
-		Secure:   isProduction,
+		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 	}
 
@@ -54,17 +55,17 @@ func main() {
 
 	// A good base middleware stack
 	if isProduction {
-		r.Use(chimiddleware.RequestID)
-		r.Use(chimiddleware.RealIP)
-		r.Use(chimiddleware.Recoverer)
-		r.Use(chimiddleware.Logger)
+		r.Use(middleware.RequestID)
+		r.Use(middleware.RealIP)
+		r.Use(middleware.Recoverer)
+		r.Use(middleware.Logger)
 	}
-	r.Use(chimiddleware.Logger)
+	r.Use(middleware.Logger)
 
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further
 	// processing should be stopped.
-	r.Use(chimiddleware.Timeout(60 * time.Second))
+	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Use(auth.PageAuth(svc))
 
@@ -113,9 +114,40 @@ func developmentSettings(r chi.Router) {
 
 		maps.Copy(w.Header(), resp.Header)
 		w.WriteHeader(resp.StatusCode)
+
+		// go template chage for login page
+		if path == "/login" {
+
+			login_page := responseToString(resp)
+			data := map[string]string{
+				"Name": "Login Page 1",
+			}
+			var buf bytes.Buffer
+			tmpl, err := template.New("login").Parse(login_page)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = tmpl.Execute(&buf, data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Write(buf.Bytes())
+		}
+
 		io.Copy(w, resp.Body)
 	})
 
+}
+
+func responseToString(resp *http.Response) string {
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+	return string(bodyBytes)
 }
 
 const (
@@ -124,7 +156,7 @@ const (
 
 func productionSettings(r chi.Router) {
 	// Apply gzip middleware to all responses
-	r.Use(chimiddleware.Compress(5))
+	r.Use(middleware.Compress(5))
 
 	// Serve static files from /_/{path...}
 	r.Get("/_astro/*", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -165,7 +197,7 @@ func productionSettings(r chi.Router) {
 		info, _ := indexFile.Stat()
 		content, _ := io.ReadAll(indexFile)
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Header().Set("Cache-Control", "no-cache")
+		// w.Header().Set("Cache-Control", "no-cache")
 		http.ServeContent(w, req, "index.html", info.ModTime(), bytes.NewReader(content))
 	}))
 }

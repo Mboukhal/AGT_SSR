@@ -75,6 +75,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if svc != nil {
 		session, err := svc.Store.Get(r, SessionName)
 		if err == nil {
+			session.Options.Secure = requestIsSecure(r)
 			session.Options.MaxAge = -1
 			_ = session.Save(r, w)
 		}
