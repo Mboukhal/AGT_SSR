@@ -3,7 +3,8 @@ include .env
 export
 
 
-all: start gen push dev
+all: dev
+# all: start gen push dev
 
 
 # -------- Development --------

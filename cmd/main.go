@@ -112,10 +112,7 @@ func developmentSettings(r chi.Router) {
 		}
 		defer resp.Body.Close()
 
-		maps.Copy(w.Header(), resp.Header)
-		w.WriteHeader(resp.StatusCode)
-
-		// go template chage for login page
+		// go template chage for login page --------------------------------
 		if path == "/login" {
 
 			login_page := responseToString(resp)
@@ -136,7 +133,10 @@ func developmentSettings(r chi.Router) {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.Write(buf.Bytes())
 		}
+		// ------------------------------------------------------
 
+		maps.Copy(w.Header(), resp.Header)
+		w.WriteHeader(resp.StatusCode)
 		io.Copy(w, resp.Body)
 	})
 
