@@ -11,9 +11,11 @@ import (
 	"strings"
 	"time"
 
-	router "github.com/Mboukhal/SvGoPg/core"
+	"github.com/Mboukhal/SvGoPg/core"
+	"github.com/Mboukhal/SvGoPg/core/auth"
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	chimiddleware "github.com/go-chi/chi/middleware"
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 )
 
@@ -33,29 +35,38 @@ func main() {
 	isProduction := app_env == "production"
 
 	r := chi.NewRouter()
-	// q, conn, err := settings.Setup(context.Background())
-	// if err != nil {
-	// 	log.Panic(err)
-	// }
-	// defer conn.Close()
+
+	cookieSecret := os.Getenv("COOKIE_SECRET")
+	if cookieSecret == "" {
+		cookieSecret = "dev-secret-change-in-production"
+	}
+
+	store := sessions.NewCookieStore([]byte(cookieSecret))
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+		Secure:   isProduction,
+		SameSite: http.SameSiteLaxMode,
+	}
+
+	svc := auth.NewService(store)
 
 	// A good base middleware stack
 	if isProduction {
-		r.Use(middleware.RequestID)
-		r.Use(middleware.RealIP)
-		r.Use(middleware.Recoverer)
-		r.Use(middleware.Logger)
+		r.Use(chimiddleware.RequestID)
+		r.Use(chimiddleware.RealIP)
+		r.Use(chimiddleware.Recoverer)
+		r.Use(chimiddleware.Logger)
 	}
-	r.Use(middleware.Logger)
-	// r.Use(middlewaretext)
-
-	// Inject queries into context
-	// r.Use(settings.WithQueries(q))
+	r.Use(chimiddleware.Logger)
 
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further
 	// processing should be stopped.
-	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(chimiddleware.Timeout(60 * time.Second))
+
+	r.Use(auth.PageAuth(svc))
 
 	if isProduction {
 		productionSettings(r)
@@ -63,7 +74,7 @@ func main() {
 		developmentSettings(r)
 	}
 
-	router.RegisterRoutes(r)
+	router.RegisterRoutes(r, svc)
 
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
@@ -76,21 +87,6 @@ func main() {
 		log.Fatal(erro)
 	}
 }
-
-// func middlewaretext(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-// 		if strings.HasPrefix(r.URL.Path, "/about") {
-// 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-// 			w.Write([]byte("This is a simple Go server for serving a SvelteKit app."))
-// 			return
-// 		}
-
-// 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
 
 func developmentSettings(r chi.Router) {
 
@@ -128,7 +124,7 @@ const (
 
 func productionSettings(r chi.Router) {
 	// Apply gzip middleware to all responses
-	r.Use(middleware.Compress(5))
+	r.Use(chimiddleware.Compress(5))
 
 	// Serve static files from /_/{path...}
 	r.Get("/_astro/*", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -144,18 +140,8 @@ func productionSettings(r chi.Router) {
 
 	// SPA fallback - serve index.html for all other routes
 	r.NotFound(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		// Try to serve the requested file if it exists
-
-		// path := req.URL.Path
-		// Prevent serving files from .well-known directory
-		// This is a security measure to avoid exposing sensitive files
-		// if strings.HasPrefix(path, "/.well-known/") {
-		// 	http.NotFound(w, req)
-		// 	return
-		// }
 
 		cleanPath := filepath.Clean(req.URL.Path)
-		// log.Println("cleanPath:", cleanPath)
 		// If the path is not root, check if the file exists
 		if cleanPath != "/" {
 			if f, err := os.Open(STATIC_DIR + cleanPath); err == nil {

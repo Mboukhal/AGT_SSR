@@ -5,10 +5,14 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// RegisterRoutes sets up the OAuth routes on the given router.
-func RegisterRoutes(r chi.Router) {
-
+func RegisterRoutes(r chi.Router, svc *auth.Service) {
 	r.Route("/api", func(r chi.Router) {
+		r.Use(auth.WithService(svc))
+		r.Use(auth.CSRFMiddleware([]string{
+			"/api/auth/microsoft/callback",
+			"/api/auth/csrf-token",
+			"/api/auth/logout",
+		}))
 		auth.RouterHandler(r)
 	})
 }

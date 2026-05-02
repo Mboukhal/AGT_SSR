@@ -1,0 +1,11 @@
+---
+import Root from "../layouts/root.astro";
+import LoginPage from "../components/auth/login-page.svelte";
+import "../styles/global.css";
+---
+
+<Root>
+	<main class="min-h-screen flex items-center justify-center">
+		<LoginPage client:load />
+	</main>
+</Root>
