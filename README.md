@@ -118,5 +118,3 @@ Go = runtime
 ## 📄 License
 
 MIT
-
-@theprimeagen
