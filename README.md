@@ -27,11 +27,10 @@ Go → parses HTML with html/template → injects data (SSR)
 
 ```astro
 {"{{.Name}}"}
-<If condition={import.meta.env.DEV}>
+{`{{#if .${Condition === "development"}}}`}
   <span class="text-sm text-gray-500">(Development Mode)</span>
-  <Else />
+{`{{else}}`}
   <span class="text-sm text-gray-500">(Production Mode)</span>
-</If>
 ```
 
 ## ▶️ Run Demo
@@ -64,7 +63,6 @@ Demo by @Mboukhal
 ### What happens
 
 * `{"{{.Name}}"}` → Astro outputs literal `{{ .Name }}` into HTML
-* `<If ...>` → resolved at **build time** by Astro
 * Final HTML still contains Go template syntax
 
 ---

@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "golang.go",
+        "astro-build.astro-vscode",
+        "svelte.svelte-vscode",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.vscode-typescript-next",
+        "xabikos.JavaScriptSnippets",
+        "RajaSunrise.sqlc-snippets",
+        "formulahendry.auto-complete-tag",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+    ]
+}

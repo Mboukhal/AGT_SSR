@@ -1,1 +1,6 @@
-{}
+{
+    "go-template.languages": [
+        "astro",
+        "html"
+    ],
+}
